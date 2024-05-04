@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DETROX</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #222;
+        color: #fff;
+        font-size: 16px;
+    }
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+        box-sizing: border-box; /* Ensure padding and border are included in width */
+    }
+    textarea {
+        width: calc(100% - 22px); /* Adjusted width to account for padding and border */
+        height: 200px;
+        resize: none;
+        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background-color: #444;
+        color: #fff;
+        font-size: 16px;
+        margin-bottom: 20px;
+        box-sizing: border-box; /* Ensure padding and border are included in width */
+    }
+    button {
+        display: block;
+        margin: 0 auto;
+        padding: 15px 30px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-size: 18px;
+    }
+    button:hover {
+        background-color: #218838;
+    }
+    #clipboardMsg {
+        display: none;
+        text-align: center;
+        color: #28a745;
+        font-weight: bold;
+        font-size: 16px;
+        position: absolute;
+        bottom: 20px; /* Adjusted position */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+    }
+    .header {
+        text-align: center;
+        padding: 20px;
+        background-color: #005cbf;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .header h1 {
+        font-size: 28px;
+        margin: 0;
+        color: #fff;
+    }
+    .toggle-container {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>TEXTTRON</h1>
+</div>
+
+<div class="toggle-container">
+    <label for="toggleMode">Switch to White Mode</label>
+    <input type="checkbox" id="toggleMode" onclick="toggleMode()">
+</div>
+
+<div class="container">
+    <textarea id="inputText" placeholder="Enter your text here"></textarea>
+    <textarea id="outputText" readonly placeholder="Processed text will appear here"></textarea>
+    <button id="processBtn">Process Text</button>
+</div>
+
+<div id="clipboardMsg">Copied to clipboard</div>
+
+<script>
+    document.getElementById("processBtn").addEventListener("click", function() {
+        var inputText = document.getElementById("inputText").value;
+        var processedText = processText(inputText);
+        document.getElementById("outputText").value = processedText;
+        copyToClipboard(processedText);
+        showClipboardMsg();
+    });
+
+    function processText(text) {
+        // Remove extra commas and spaces before commas
+        text = text.replace(/\s*,\s*/g, ', ');
+        // Avoid "Expertise" section and remove leading/trailing whitespace
+        var lines = text.split('\n');
+        var processedLines = [];
+        lines.forEach(function(line) {
+            line = line.trim();
+            if (line !== '' && line !== 'Expertise') {
+                processedLines.push(line);
+            }
+        });
+        text = processedLines.join(', ');
+        return text;
+    }
+
+    function copyToClipboard(text) {
+        var textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+    }
+
+    function showClipboardMsg() {
+        var clipboardMsg = document.getElementById("clipboardMsg");
+        clipboardMsg.style.display = "block";
+        setTimeout(function() {
+            clipboardMsg.style.display = "none";
+        }, 1000); // Changed timeout to 1 second
+    }
+
+    function toggleMode() {
+        var body = document.body;
+        var toggle = document.getElementById("toggleMode");
+        if (toggle.checked) {
+            // White mode
+            body.style.backgroundColor = "#fff";
+            body.style.color = "#000";
+            document.querySelectorAll("textarea").forEach(function(element) {
+                element.style.backgroundColor = "#f9f9f9";
+                element.style.borderColor = "#ccc";
+                element.style.color = "#000"; /* Text color changed to black */
+            });
+            document.querySelector(".container").style.backgroundColor = "#fff";
+            document.querySelector(".header").style.backgroundColor = "#007bff";
+            document.querySelector(".toggle-container").style.color = "#000"; /* Text color changed to black */
+            document.getElementById("processBtn").style.backgroundColor = "#007bff"; /* Button color changed to blue */
+        } else {
+            // Dark mode
+            body.style.backgroundColor = "#222";
+            body.style.color = "#fff";
+            document.querySelectorAll("textarea").forEach(function(element) {
+                element.style.backgroundColor = "#444";
+                element.style.borderColor = "#999";
+                element.style.color = "#fff";
+            });
+            document.querySelector(".container").style.backgroundColor = "#333";
+            document.querySelector(".header").style.backgroundColor = "#005cbf";
+            document.querySelector(".toggle-container").style.color = "#fff";
+            document.getElementById("processBtn").style.backgroundColor = "#28a745"; /* Button color changed to green */
+        }
+    }
+</script>
+
+</body>
+</html>
